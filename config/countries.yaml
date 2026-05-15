@@ -1,0 +1,260 @@
+# Per-country configuration for AfriEnrich MVP seed countries.
+# Fields: iso2, phone_code, primary_language, languages, legal_suffixes,
+#         registries (Tier 1 — mark TODO_RESEARCH if URL unknown),
+#         search_query_lang
+
+CI:
+  iso2: CI
+  phone_code: "225"
+  primary_language: fr
+  languages: [fr]
+  legal_suffixes:
+    - SARL
+    - SA
+    - SAS
+    - SUARL
+    - EIRL
+    - GIE
+    - SNC
+    - EPIC
+    - CI
+  registries:
+    - name: RCCM Côte d'Ivoire
+      url: TODO_RESEARCH
+      tier: 1
+    - name: Go Africa Online CI
+      url: https://www.goafricaonline.com/ci/
+      tier: 2
+    - name: CI Entreprises
+      url: https://www.ci-entreprises.com/
+      tier: 2
+  search_query_lang: fr
+
+NG:
+  iso2: NG
+  phone_code: "234"
+  primary_language: en
+  languages: [en]
+  legal_suffixes:
+    - LTD
+    - LIMITED
+    - PLC
+    - NIG
+    - NIGERIA
+    - ENT
+    - ENTERPRISES
+    - GLOBAL
+    - INT
+    - INTERNATIONAL
+    - CO
+  registries:
+    - name: CAC Nigeria
+      url: https://search.cac.gov.ng/home
+      tier: 1
+    - name: VConnect Nigeria
+      url: https://www.vconnect.com/
+      tier: 2
+    - name: BusinessList Nigeria
+      url: https://www.businesslist.com.ng/
+      tier: 2
+  search_query_lang: en
+
+SN:
+  iso2: SN
+  phone_code: "221"
+  primary_language: fr
+  languages: [fr, wo]
+  legal_suffixes:
+    - SARL
+    - SA
+    - SAS
+    - GIE
+    - SNC
+    - SUARL
+    - SN
+  registries:
+    - name: RCCM Sénégal
+      url: TODO_RESEARCH
+      tier: 1
+    - name: Go Africa Online SN
+      url: https://www.goafricaonline.com/sn/
+      tier: 2
+    - name: SenBizz
+      url: TODO_RESEARCH
+      tier: 2
+  search_query_lang: fr
+
+GH:
+  iso2: GH
+  phone_code: "233"
+  primary_language: en
+  languages: [en]
+  legal_suffixes:
+    - LTD
+    - LIMITED
+    - GH
+    - GHANA
+    - ENT
+    - ENTERPRISES
+    - CO
+    - PLC
+    - COMPANY
+  registries:
+    - name: RGD Ghana
+      url: https://rgd.gov.gh/
+      tier: 1
+    - name: Ghana Yellow Pages
+      url: https://www.ghanayellowpages.com/
+      tier: 2
+  search_query_lang: en
+
+KE:
+  iso2: KE
+  phone_code: "254"
+  primary_language: en
+  languages: [en, sw]
+  legal_suffixes:
+    - LTD
+    - LIMITED
+    - KE
+    - KENYA
+    - ENT
+    - ENTERPRISES
+    - CO
+    - PLC
+    - EA
+    - EAST AFRICA
+    - AFRICA
+  registries:
+    - name: eCitizen Kenya BRS
+      url: https://brs.ecitizen.go.ke/
+      tier: 1
+    - name: Kenya Yellow Pages
+      url: https://www.yellowpages.co.ke/
+      tier: 2
+  search_query_lang: en
+
+BF:
+  iso2: BF
+  phone_code: "226"
+  primary_language: fr
+  languages: [fr, mos]
+  legal_suffixes:
+    - SARL
+    - SA
+    - SAS
+    - GIE
+    - SNC
+    - SUARL
+    - BF
+    - BURKINA
+  registries:
+    - name: RCCM Burkina Faso
+      url: TODO_RESEARCH
+      tier: 1
+    - name: Go Africa Online BF
+      url: https://www.goafricaonline.com/bf/
+      tier: 2
+  search_query_lang: fr
+
+TG:
+  iso2: TG
+  phone_code: "228"
+  primary_language: fr
+  languages: [fr, ewe]
+  legal_suffixes:
+    - SARL
+    - SA
+    - GIE
+    - SNC
+    - TG
+  registries:
+    - name: Go Africa Online TG
+      url: https://www.goafricaonline.com/tg/
+      tier: 2
+  search_query_lang: fr
+
+ML:
+  iso2: ML
+  phone_code: "223"
+  primary_language: fr
+  languages: [fr, bm]
+  legal_suffixes:
+    - SARL
+    - SA
+    - GIE
+    - SNC
+    - ML
+  registries:
+    - name: Go Africa Online ML
+      url: https://www.goafricaonline.com/ml/
+      tier: 2
+  search_query_lang: fr
+
+NE:
+  iso2: NE
+  phone_code: "227"
+  primary_language: fr
+  languages: [fr, ha]
+  legal_suffixes:
+    - SARL
+    - SA
+    - GIE
+    - SNC
+    - NE
+  registries:
+    - name: Go Africa Online NE
+      url: https://www.goafricaonline.com/ne/
+      tier: 2
+  search_query_lang: fr
+
+GN:
+  iso2: GN
+  phone_code: "224"
+  primary_language: fr
+  languages: [fr]
+  legal_suffixes:
+    - SARL
+    - SA
+    - GIE
+    - SNC
+    - GN
+  registries:
+    - name: Go Africa Online GN
+      url: https://www.goafricaonline.com/gn/
+      tier: 2
+  search_query_lang: fr
+
+MA:
+  iso2: MA
+  phone_code: "212"
+  primary_language: fr
+  languages: [fr, ar, ber]
+  legal_suffixes:
+    - SARL
+    - SA
+    - SAS
+    - GIE
+    - MA
+  registries:
+    - name: RC Maroc
+      url: TODO_RESEARCH
+      tier: 1
+  search_query_lang: fr
+
+CM:
+  iso2: CM
+  phone_code: "237"
+  primary_language: fr
+  languages: [fr, en]
+  legal_suffixes:
+    - SARL
+    - SA
+    - GIE
+    - SNC
+    - CM
+  registries:
+    - name: Go Africa Online CM
+      url: https://www.goafricaonline.com/cm/
+      tier: 2
+  search_query_lang: fr

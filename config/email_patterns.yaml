@@ -1,0 +1,19 @@
+# Email username patterns to probe on discovered domains.
+# Ordered by likelihood of existence.
+patterns:
+  - info
+  - contact
+  - sales
+  - ventes
+  - direction
+  - commercial
+  - admin
+  - administration
+  - secretariat
+  - accueil
+  - comptabilite
+  - finance
+  - export
+  - import
+  - logistics
+  - communication

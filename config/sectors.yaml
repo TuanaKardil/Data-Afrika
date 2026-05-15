@@ -1,0 +1,84 @@
+# HS code prefix → sector keywords (EN / FR / PT)
+# Used to add sector context to search queries.
+
+sectors:
+  "01":
+    en: [livestock, animals, cattle]
+    fr: [élevage, animaux, bétail]
+    pt: [pecuária, animais, gado]
+  "02":
+    en: [meat, poultry, food]
+    fr: [viande, volaille, alimentation]
+    pt: [carne, frango, alimentação]
+  "03":
+    en: [fish, seafood, fishing]
+    fr: [poisson, fruits de mer, pêche]
+    pt: [peixe, frutos do mar, pesca]
+  "04":
+    en: [dairy, milk, eggs]
+    fr: [laitier, lait, œufs]
+    pt: [laticínios, leite, ovos]
+  "07":
+    en: [vegetables, produce, agri]
+    fr: [légumes, produits agricoles, agri]
+    pt: [legumes, produtos agrícolas, agri]
+  "08":
+    en: [fruit, nuts, tropical]
+    fr: [fruits, noix, tropical]
+    pt: [frutas, nozes, tropical]
+  "10":
+    en: [cereals, grain, wheat, rice]
+    fr: [céréales, grain, blé, riz]
+    pt: [cereais, grãos, trigo, arroz]
+  "15":
+    en: [oils, fats, vegetable oil]
+    fr: [huiles, graisses, huile végétale]
+    pt: [óleos, gorduras, óleo vegetal]
+  "22":
+    en: [beverages, drinks, alcohol]
+    fr: [boissons, alcool]
+    pt: [bebidas, álcool]
+  "27":
+    en: [fuel, petroleum, energy]
+    fr: [carburant, pétrole, énergie]
+    pt: [combustível, petróleo, energia]
+  "28":
+    en: [chemicals, inorganic]
+    fr: [chimie, inorganique]
+    pt: [química, inorgânico]
+  "30":
+    en: [pharmaceuticals, medicine, drugs]
+    fr: [pharmaceutique, médicaments]
+    pt: [farmacêutico, medicamentos]
+  "39":
+    en: [plastics, polymers]
+    fr: [plastiques, polymères]
+    pt: [plásticos, polímeros]
+  "44":
+    en: [wood, timber, lumber]
+    fr: [bois, bois de construction]
+    pt: [madeira, madeira de construção]
+  "52":
+    en: [cotton, textile, fabric]
+    fr: [coton, textile, tissu]
+    pt: [algodão, têxtil, tecido]
+  "61":
+    en: [clothing, apparel, garments]
+    fr: [vêtements, habillement]
+    pt: [roupas, vestuário]
+  "72":
+    en: [steel, iron, metal]
+    fr: [acier, fer, métal]
+    pt: [aço, ferro, metal]
+  "84":
+    en: [machinery, equipment, industrial]
+    fr: [machines, équipements, industriel]
+    pt: [máquinas, equipamentos, industrial]
+  "85":
+    en: [electronics, electrical, IT]
+    fr: [électronique, électrique, informatique]
+    pt: [eletrônicos, elétrico, TI]
+  "87":
+    en: [vehicles, automotive, transport]
+    fr: [véhicules, automobile, transport]
+    pt: [veículos, automóvel, transporte]

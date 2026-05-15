@@ -1,0 +1,39 @@
+# Source priority, rate limits, and enabled flags.
+# rate_limit_per_second: max requests per second to this domain.
+
+sources:
+  serper_web:
+    tier: 1
+    base_confidence: 65
+    rate_limit_per_second: 2.0
+    enabled: true
+
+  go_africa_online:
+    tier: 2
+    base_confidence: 75
+    rate_limit_per_second: 0.5
+    enabled: true
+
+  serper_maps:
+    tier: 3
+    base_confidence: 70
+    rate_limit_per_second: 2.0
+    enabled: true
+
+  website_crawler:
+    tier: 3
+    base_confidence: 70
+    rate_limit_per_second: 0.33
+    enabled: true
+
+  facebook:
+    tier: 4
+    base_confidence: 55
+    rate_limit_per_second: 0.25
+    enabled: true
+
+  email_prober:
+    tier: 5
+    base_confidence: 50
+    rate_limit_per_second: 0.2
+    enabled: true
