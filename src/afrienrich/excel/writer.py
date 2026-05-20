@@ -68,8 +68,8 @@ _INTERNAL_COLS = {
     "cleaned_name", "extra", "audit_ids", "processed_at",
     "gps_lat", "gps_lon", "address", "instagram_url", "whatsapp_number",
     # per-phone/email detail columns — kept only as number+source
-    *(f"phone_{i}_{s}" for i in range(1, 6) for s in ("confidence", "type", "audit_id")),
-    *(f"email_{i}_{s}" for i in range(1, 3) for s in ("confidence", "validation", "audit_id")),
+    *(f"phone_{i}_{s}" for i in range(1, 9) for s in ("confidence", "type", "audit_id")),
+    *(f"email_{i}_{s}" for i in range(1, 6) for s in ("confidence", "validation", "audit_id")),
 }
 
 _HEADER_LABELS: dict[str, str] = {
@@ -80,8 +80,14 @@ _HEADER_LABELS: dict[str, str] = {
     "phone_3": "Telefon 3", "phone_3_source": "Tel3 Kaynak",
     "phone_4": "Telefon 4", "phone_4_source": "Tel4 Kaynak",
     "phone_5": "Telefon 5", "phone_5_source": "Tel5 Kaynak",
+    "phone_6": "Telefon 6", "phone_6_source": "Tel6 Kaynak",
+    "phone_7": "Telefon 7", "phone_7_source": "Tel7 Kaynak",
+    "phone_8": "Telefon 8", "phone_8_source": "Tel8 Kaynak",
     "email_1": "E-posta 1", "email_1_source": "Email1 Kaynak",
     "email_2": "E-posta 2", "email_2_source": "Email2 Kaynak",
+    "email_3": "E-posta 3", "email_3_source": "Email3 Kaynak",
+    "email_4": "E-posta 4", "email_4_source": "Email4 Kaynak",
+    "email_5": "E-posta 5", "email_5_source": "Email5 Kaynak",
     "website": "Website",
     "facebook_url": "Facebook",
     "linkedin_url": "LinkedIn",
@@ -97,15 +103,21 @@ _COLUMN_ORDER = [
     "phone_3", "phone_3_source",
     "phone_4", "phone_4_source",
     "phone_5", "phone_5_source",
+    "phone_6", "phone_6_source",
+    "phone_7", "phone_7_source",
+    "phone_8", "phone_8_source",
     "email_1", "email_1_source",
     "email_2", "email_2_source",
+    "email_3", "email_3_source",
+    "email_4", "email_4_source",
+    "email_5", "email_5_source",
     "website", "facebook_url", "linkedin_url",
     "search_status", "overall_confidence", "notes",
 ]
 
 
-_PHONE_COLS = [f"phone_{i}" for i in range(1, 6)]
-_EMAIL_COLS = [f"email_{i}" for i in range(1, 3)]
+_PHONE_COLS = [f"phone_{i}" for i in range(1, 9)]
+_EMAIL_COLS = [f"email_{i}" for i in range(1, 6)]
 
 
 def _remove_cross_row_duplicates(df: pd.DataFrame) -> pd.DataFrame:

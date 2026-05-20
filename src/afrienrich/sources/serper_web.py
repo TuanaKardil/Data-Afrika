@@ -112,4 +112,5 @@ class SerperWebSource(BaseSource):
             website=website,
             social_urls=social,
             audit_entries=[audit],
+            candidate_urls=urls,
         )

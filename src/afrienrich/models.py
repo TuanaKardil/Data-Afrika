@@ -67,6 +67,8 @@ class SourceResult(BaseModel):
     address: str | None = None
     gps: GpsCoords | None = None
     audit_entries: list[AuditEntry] = Field(default_factory=list)
+    notes: str = ""
+    candidate_urls: list[str] = Field(default_factory=list)
 
 
 class EnrichedRow(BaseModel):
@@ -84,7 +86,7 @@ class EnrichedRow(BaseModel):
     country_iso2: str = ""
     inferred_sector: str = ""
 
-    # Contact data (up to 5 phones, 2 emails)
+    # Contact data (up to 8 phones, 5 emails — sorted by confidence desc)
     phone_1: str = ""
     phone_1_source: str = ""
     phone_1_confidence: int = 0
@@ -115,6 +117,24 @@ class EnrichedRow(BaseModel):
     phone_5_type: str = ""
     phone_5_audit_id: str = ""
 
+    phone_6: str = ""
+    phone_6_source: str = ""
+    phone_6_confidence: int = 0
+    phone_6_type: str = ""
+    phone_6_audit_id: str = ""
+
+    phone_7: str = ""
+    phone_7_source: str = ""
+    phone_7_confidence: int = 0
+    phone_7_type: str = ""
+    phone_7_audit_id: str = ""
+
+    phone_8: str = ""
+    phone_8_source: str = ""
+    phone_8_confidence: int = 0
+    phone_8_type: str = ""
+    phone_8_audit_id: str = ""
+
     email_1: str = ""
     email_1_source: str = ""
     email_1_confidence: int = 0
@@ -126,6 +146,24 @@ class EnrichedRow(BaseModel):
     email_2_confidence: int = 0
     email_2_validation: str = ""
     email_2_audit_id: str = ""
+
+    email_3: str = ""
+    email_3_source: str = ""
+    email_3_confidence: int = 0
+    email_3_validation: str = ""
+    email_3_audit_id: str = ""
+
+    email_4: str = ""
+    email_4_source: str = ""
+    email_4_confidence: int = 0
+    email_4_validation: str = ""
+    email_4_audit_id: str = ""
+
+    email_5: str = ""
+    email_5_source: str = ""
+    email_5_confidence: int = 0
+    email_5_validation: str = ""
+    email_5_audit_id: str = ""
 
     website: str = ""
     facebook_url: str = ""

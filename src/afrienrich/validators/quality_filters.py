@@ -8,6 +8,7 @@ plus QualityFilter — a stateful wrapper that holds per-run seen-email state.
 from __future__ import annotations
 
 import re
+import unicodedata
 from pathlib import Path
 
 import structlog
@@ -59,6 +60,78 @@ _GENERIC_EMAIL_DOMAINS = {
     "gmail", "yahoo", "hotmail", "outlook", "icloud", "live", "protonmail",
 }
 
+# ── Recruitment / role email detection (Fix 3) ───────────────────────────────
+
+_RECRUITMENT_KEYWORDS = {
+    "recrutement", "recruitment", "rh", "hr", "careers", "career",
+    "emploi", "jobs", "job", "talent", "hiring", "embauche",
+}
+_SUPPORT_KEYWORDS = {"support", "sav", "service-client", "helpdesk"}
+
+# ── Fix 6: Collision risk scoring ────────────────────────────────────────────
+
+_GENERIC_SECTOR_WORDS = {
+    "metal", "construction", "materiaux", "matériaux", "bois", "acier",
+    "steel", "bati", "build", "general", "général", "groupe", "group",
+    "commerce", "trading", "import", "export", "distribution", "service",
+    "services", "industrie", "industry",
+}
+
+# Known international brands that exist in multiple countries
+_KNOWN_BRANDS = {
+    "iamgold", "shell", "total", "bolloré", "bollore", "orange", "mtn",
+    "airtel", "nestle", "unilever", "cargill", "olam", "sifca", "societe generale",
+}
+
+_LEGAL_SUFFIX_STRIP = re.compile(
+    r"\b(sarl|sa|sas|ltd|limited|gie|snc|suarl|plc|eirl|srl|spa|lda|pte|inc|corp)\b",
+    re.IGNORECASE,
+)
+
+
+def compute_collision_risk(company_name: str) -> tuple[str, int]:
+    """Return (risk_level, penalty). risk_level is 'high' or 'normal'. (Fix 6)"""
+    stripped = _LEGAL_SUFFIX_STRIP.sub("", company_name).strip()
+    words = [w for w in re.split(r"[\s\-_&'+.,/]", stripped.upper()) if w]
+
+    score = 0
+
+    # Short name (≤10 chars after stripping suffixes and spaces)
+    if len(stripped.replace(" ", "")) <= 10:
+        score += 2
+
+    # Any word in the name that is a 2–5 char all-caps acronym (e.g. "GMC", "UNI")
+    if any(
+        2 <= len(w) <= 5 and w.isalpha() and w.upper() == w
+        for w in words
+    ):
+        score += 3
+
+    # Name ends with a short acronym (trade name), e.g. "… CONSTRUCTION GMC"
+    last_word = words[-1] if words else ""
+    if 2 <= len(last_word) <= 5 and last_word.isalpha() and last_word.upper() == last_word:
+        score += 2
+
+    # All meaningful words are generic sector words
+    meaningful = [
+        w for w in words
+        if re.match(r"^[A-ZÀÂÆÇÉÈÊËÎÏÔŒÙÛÜŸ]{2,}$", w)
+    ]
+    if meaningful and all(
+        re.sub(r"[^a-z]", "", w.lower()) in _GENERIC_SECTOR_WORDS for w in meaningful
+    ):
+        score += 2
+
+    # Known international brand
+    name_lower = company_name.lower()
+    if any(brand in name_lower for brand in _KNOWN_BRANDS):
+        score += 3
+
+    if score >= 4:
+        return "high", 10
+    return "normal", 0
+
+
 # ── Website country paths ─────────────────────────────────────────────────────
 
 _DIRECTORY_COUNTRY_PATH: dict[str, re.Pattern[str]] = {
@@ -97,6 +170,14 @@ _COUNTRY_WORDS: dict[str, list[str]] = {
 def _normalize(text: str) -> str:
     """Lowercase + strip non-alphanumeric."""
     return re.sub(r"[^a-z0-9]", "", text.lower())
+
+
+def _norm_slug(text: str) -> str:
+    """Lowercase, strip accents, keep alphanumeric and spaces (for token-based fuzzy match)."""
+    stripped = "".join(
+        c for c in unicodedata.normalize("NFD", text.lower()) if unicodedata.category(c) != "Mn"
+    )
+    return re.sub(r"[^a-z0-9 ]", " ", stripped).strip()
 
 
 def _build_abbreviation(company_name: str) -> str:
@@ -144,6 +225,20 @@ def _tld_country(domain: str) -> str | None:
 
 # ── Stateless validators ─────────────────────────────────────────────────────
 
+def check_email_role(email: EmailResult) -> tuple[str, int, str]:
+    """Return (role_tag, penalty, note) for recruitment/support emails (Fix 3)."""
+    addr = email.address.lower().strip()
+    local = addr.split("@")[0] if "@" in addr else addr
+    # Split on common separators to catch "essakane_recrutement" → ["essakane", "recrutement"]
+    parts = set(re.split(r"[_.\-+]", local)) | {local}
+    for part in parts:
+        if part in _RECRUITMENT_KEYWORDS:
+            return "recruitment", 25, "Recruitment email, not suitable for B2B outreach"
+        if part in _SUPPORT_KEYWORDS:
+            return "support", 10, "Support email, low-value for B2B outreach"
+    return "", 0, ""
+
+
 def validate_phone_prefix(phone: PhoneResult, iso2: str) -> tuple[bool, str]:
     """Return (True, "") if the phone matches the expected country dial code."""
     prefixes = _get_phone_prefixes().get(iso2) or _PHONE_PREFIX_FALLBACK.get(iso2)
@@ -176,10 +271,56 @@ def validate_email_uniqueness(email: EmailResult, seen_emails: set[str]) -> tupl
     return True, ""
 
 
-def validate_website_country(url: str, iso2: str) -> tuple[int, str]:
-    """Return (penalty, note). Non-zero when a directory URL has a wrong country path."""
+_GAO_CATEGORY_RE = re.compile(r"goafricaonline\.com/[a-z]{2}/annuaire/")
+_GAO_COMPANY_RE = re.compile(r"goafricaonline\.com/[a-z]{2}/\d+")
+# Fix 10: match the slug portion of a GoAfrica listing URL: /bf/17706-gmf-materiels-...
+_GAO_LISTING_RE = re.compile(r"goafricaonline\.com/[a-z]{2}/(\d+-[a-z0-9-]+)")
+
+_SLUG_THRESHOLD = 70
+
+
+def _gao_listing_slug_words(url: str) -> str:
+    """Extract human-readable words from a GoAfrica listing URL slug."""
+    m = _GAO_LISTING_RE.search(url.lower())
+    if not m:
+        return ""
+    slug = m.group(1)
+    slug = re.sub(r"^\d+-", "", slug)  # strip leading '123-'
+    # Drop location suffixes that pollute matching (city / country tokens at the end)
+    slug = re.sub(r"-(ouagadougou|abidjan|dakar|accra|lagos|nairobi|cotonou|lome|bamako|niamey"
+                  r"|conakry|yaounde|burkina|faso|senegal|ghana|nigeria|kenya|togo|mali|niger"
+                  r"|guinee|cameroun|benin|madagascar).*$", "", slug)
+    return slug.replace("-", " ").strip()
+
+
+def validate_website_url(
+    url: str, iso2: str, company_name: str = ""
+) -> tuple[int, str]:
+    """Return (penalty, note). Non-zero for category pages or wrong-country directory paths."""
     if not url:
         return 0, ""
+
+    # Fix 4 / Fix 7: GoAfrica Online category page rejection (-20)
+    if _GAO_CATEGORY_RE.search(url):
+        return 20, "directory_category_page_not_company_page"
+
+    # Fix 10: GoAfrica listing URL slug vs company name — reject if slug score < 70
+    if company_name and _GAO_LISTING_RE.search(url):
+        slug_words = _gao_listing_slug_words(url)
+        if slug_words:
+            score = int(fuzz.token_set_ratio(
+                _norm_slug(company_name), _norm_slug(slug_words)
+            ))
+            if score < _SLUG_THRESHOLD:
+                log.debug(
+                    "gao_listing_slug_mismatch",
+                    url=url,
+                    company=company_name,
+                    slug=slug_words,
+                    score=score,
+                )
+                return 20, "directory_listing_wrong_company"
+
     for domain_pattern, path_re in _DIRECTORY_COUNTRY_PATH.items():
         if domain_pattern not in url:
             continue
@@ -189,6 +330,13 @@ def validate_website_country(url: str, iso2: str) -> tuple[int, str]:
             if url_iso2 != iso2.upper():
                 return 20, f"Suspicious URL: country mismatch ({url_iso2} != {iso2})"
     return 0, ""
+
+
+def validate_website_country(
+    url: str, iso2: str, company_name: str = ""
+) -> tuple[int, str]:
+    """Alias kept for callers that have not yet migrated to validate_website_url."""
+    return validate_website_url(url, iso2, company_name)
 
 
 def validate_email_domain_match(
@@ -204,17 +352,19 @@ def validate_email_domain_match(
 
     is_generic = any(g in domain for g in _GENERIC_EMAIL_DOMAINS)
 
-    # Rule: domain must plausibly belong to the company
-    if not is_generic and not _company_matches_domain(company_name, domain):
-        notes.append("Warning: email domain does not match company")
-        penalty += 15
+    # For free/generic providers, skip domain and TLD checks — they don't indicate country
+    if not is_generic:
+        # Rule: domain must plausibly belong to the company
+        if not _company_matches_domain(company_name, domain):
+            notes.append("Warning: email domain does not match company")
+            penalty += 15
 
-    # Rule: email TLD must not conflict with company country
-    tld_iso = _tld_country(domain)
-    if tld_iso and tld_iso != iso2.upper():
-        tld_str = domain.rsplit(".", 1)[-1]
-        notes.append(f"Warning: email TLD country mismatch (.{tld_str} is {tld_iso})")
-        penalty += 15
+        # Rule: email TLD must not conflict with company country
+        tld_iso = _tld_country(domain)
+        if tld_iso and tld_iso != iso2.upper():
+            tld_str = domain.rsplit(".", 1)[-1]
+            notes.append(f"Warning: email TLD country mismatch (.{tld_str} is {tld_iso})")
+            penalty += 15
 
     # Rule: foreign country name in the email address
     for country_iso, words in _COUNTRY_WORDS.items():

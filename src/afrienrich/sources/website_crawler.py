@@ -11,7 +11,7 @@ import structlog
 from selectolax.parser import HTMLParser
 
 from ..extractors.address import extract_address, extract_gps
-from ..extractors.email import extract_emails
+from ..extractors.email import extract_emails_raw
 from ..extractors.phone import extract_phones
 from ..extractors.social import extract_social_urls
 from ..models import AuditEntry, CompanyQuery, SourceResult
@@ -21,8 +21,12 @@ from .base import BaseSource
 log = structlog.get_logger()
 
 _CONTACT_PATHS = [
+    "/",
     "/contact", "/contacts", "/contactez-nous", "/contact-us",
+    "/nous-contacter",
     "/about", "/about-us", "/a-propos", "/quem-somos", "/contato",
+    "/home", "/accueil",
+    "/secretariat", "/direction",
 ]
 
 _HEADERS = {
@@ -85,7 +89,10 @@ class WebsiteCrawlerSource(BaseSource):
             )
 
         phones = extract_phones(all_text, company.country, self.name, self.base_confidence)
-        emails = extract_emails(all_text, self.name, self.base_confidence)
+        # Fix 14: raw extraction — all emails whose domain matches the site (no 2-email cap)
+        raw_netloc = base_url.split("//")[-1].split("/")[0]
+        website_domain = raw_netloc[4:] if raw_netloc.startswith("www.") else raw_netloc
+        emails = extract_emails_raw(all_text, website_domain, self.name, self.base_confidence)
         social = extract_social_urls(all_text)
         address = extract_address(all_text)
         gps = extract_gps(all_text)

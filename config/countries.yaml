@@ -8,6 +8,7 @@ CI:
   phone_code: "225"
   primary_language: fr
   languages: [fr]
+  facebook_tier: 2
   legal_suffixes:
     - SARL
     - SA
@@ -64,6 +65,7 @@ SN:
   phone_code: "221"
   primary_language: fr
   languages: [fr, wo]
+  facebook_tier: 2
   legal_suffixes:
     - SARL
     - SA
@@ -139,6 +141,7 @@ BF:
   phone_code: "226"
   primary_language: fr
   languages: [fr, mos]
+  facebook_tier: 2
   legal_suffixes:
     - SARL
     - SA
@@ -162,6 +165,7 @@ TG:
   phone_code: "228"
   primary_language: fr
   languages: [fr, ewe]
+  facebook_tier: 2
   legal_suffixes:
     - SARL
     - SA
@@ -179,6 +183,7 @@ ML:
   phone_code: "223"
   primary_language: fr
   languages: [fr, bm]
+  facebook_tier: 2
   legal_suffixes:
     - SARL
     - SA
@@ -196,6 +201,7 @@ NE:
   phone_code: "227"
   primary_language: fr
   languages: [fr, ha]
+  facebook_tier: 2
   legal_suffixes:
     - SARL
     - SA
@@ -213,6 +219,7 @@ GN:
   phone_code: "224"
   primary_language: fr
   languages: [fr]
+  facebook_tier: 2
   legal_suffixes:
     - SARL
     - SA
@@ -247,6 +254,7 @@ CM:
   phone_code: "237"
   primary_language: fr
   languages: [fr, en]
+  facebook_tier: 2
   legal_suffixes:
     - SARL
     - SA

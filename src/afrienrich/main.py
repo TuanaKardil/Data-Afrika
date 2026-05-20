@@ -65,7 +65,8 @@ def enrich(
 ) -> None:
     """Enrich an XLSX list of importer companies with phone, email, website, and social data."""
 
-    output_path = output or input_path.with_suffix(".enriched.xlsx")
+    desktop = Path.home() / "Desktop"
+    output_path = output or (desktop / input_path.with_suffix(".enriched.xlsx").name)
     staging_path = output_path.with_suffix(".staging.csv")
     log_dir = Path(__file__).parent.parent.parent / "data" / "logs"
     setup_logging(log_dir)
@@ -90,12 +91,14 @@ def enrich(
         typer.echo("Dry run complete — config valid, no sources called.")
         raise typer.Exit(0)
 
-    # Resume: skip already-processed rows
+    # Resume: skip already-processed rows; when not resuming, clear any stale staging file
     processed_indices: set[int] = set()
     if resume:
         processed_indices = load_staging(staging_path)
         if processed_indices:
             typer.echo(f"Resuming — skipping {len(processed_indices)} already-processed rows.")
+    elif staging_path.exists():
+        staging_path.unlink()
 
     companies_to_run = [
         c for c in companies
